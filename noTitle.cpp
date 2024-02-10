@@ -14,6 +14,8 @@
 
 //マップの出力関数
 void output_map(char map[sizeH][sizeW]) {
+    putchar('\n');
+
     for (int i = 0; i < sizeH; i++) {
         for (int j = 0; j < sizeW; j++) {
             printf("%c", map[i][j]);
@@ -54,6 +56,53 @@ void map_reset(char map[sizeH][sizeW]) {
     }
 }
 
+//入力の取得関数
+int input_line() {
+    char input;
+
+    //自機の操作
+    scanf_s("%c%*[^\n]", &input); //不要な入力を除く
+    //printf("input = %c\n", input);
+
+    //攻撃関数の呼び出し
+    if (input == 'a') {
+        //func_attack()
+        return 1;
+    }
+
+    //移動関数の呼び出し
+    else if (input == 'r' || input == 'l' || input == 'u' || input == 'd') {
+        //func_move();
+        return 1;
+    }
+
+    //違法な入力：入力のやり直し
+    else {
+        //表示メッセージ
+        printf("\n違法な入力です\n");
+        return 0;
+    }
+}
+
+//ゲーム中の処理を行う関数
+void now_gaming(char map[sizeH][sizeW]) {
+    //マップの初期化
+    map_reset(map);
+    output_map(map);
+
+    int checkInput = 0; //入力の取得ができているかのチェック
+    while (1) {
+        //入力の受け取り
+        while (checkInput == 0) {
+            //入力取得関数の呼び出し
+            checkInput = input_line();
+            //printf("checkInput = %d\n", checkInput);
+        }
+
+        //敵の行動
+    }
+}
+
 //ゲーム開始時に初期化が必要なものは関数内、それ以外はmain内に記述
 int main()
 {
@@ -64,15 +113,10 @@ int main()
     char map[sizeH][sizeW]; //ゲームマップ
 
     //ゲーム開始
-    int i = 0;
 
-    while (i == 0) {
-        //マップの初期化
-        map_reset(map);
-        output_map(map);
-        i++;
-
-        //
+    while (1) {
+        //ゲーム開始関数
+        now_gaming(map);
     }
 
     return 0;
