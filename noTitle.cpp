@@ -58,7 +58,8 @@ void map_reset(char map[sizeH][sizeW]) {
 
 //入力の取得関数
 int input_line() {
-    char input;
+    char input; //入力を受け取る
+    int checkMove = 0; //移動可否判定用
 
     //自機の操作
     scanf_s("%c%*[^\n]", &input); //不要な入力を除く
@@ -66,14 +67,31 @@ int input_line() {
 
     //攻撃関数の呼び出し
     if (input == 'a') {
-        //func_attack()
+        func_attack(map);
         return 1;
     }
 
     //移動関数の呼び出し
     else if (input == 'r' || input == 'l' || input == 'u' || input == 'd') {
-        //func_move();
-        return 1;
+        checkMove = func_move(map);
+
+        //移動可能
+        if (checkMove == 1) {
+            return 1;
+        }
+
+        //移動不可能
+        else if(checkMove == 0) {
+            printf("\n移動不可能です\n");
+            return 0;
+        }
+
+        //例外
+        else {
+            printf("\nゲーム終了 : func_move\n");
+            exit(0);
+        }
+        
     }
 
     //違法な入力：入力のやり直し
@@ -81,6 +99,37 @@ int input_line() {
         //表示メッセージ
         printf("\n違法な入力です\n");
         return 0;
+    }
+}
+
+//自機の攻撃処理関数
+void func_attack(char map[sizeH][sizeW]) {
+    //自機の探索
+    int i = 0;
+    int j = 0;
+    while (i < sizeH) {
+        while (j < sizeW) {
+            //攻撃処理
+            if (map[i][j] == 'A') {
+                map[i][j + 1] = '>';
+
+                //処理終了
+                i = sizeH;
+                j = sizeW;
+            }
+            else {
+                i++;
+                j++;
+            }
+        }
+    }
+}
+
+//自機の移動処理関数
+int func_move(char map[sizeH][sizeW], char dir) {
+    //右移動
+    if (dir == 'r') {
+        //
     }
 }
 
@@ -95,11 +144,12 @@ void now_gaming(char map[sizeH][sizeW]) {
         //入力の受け取り
         while (checkInput == 0) {
             //入力取得関数の呼び出し
-            checkInput = input_line();
+            checkInput = input_line(); //return 1で成功
             //printf("checkInput = %d\n", checkInput);
         }
 
         //敵の行動
+
     }
 }
 
