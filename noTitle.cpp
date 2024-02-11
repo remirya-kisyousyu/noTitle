@@ -7,9 +7,9 @@
 #include <time.h>
 #include <math.h>
 
-//マップ：10行15列の横長マップ
-#define sizeH 10
-#define sizeW 20
+//マップ：10行20列の縦長マップ
+#define sizeH 20
+#define sizeW 10
 #define HP 3
 
 //マップの出力関数
@@ -57,12 +57,12 @@ void map_reset(char map[sizeH][sizeW]) {
 }
 
 //入力の取得関数
-int input_line() {
+int input_line(char map[sizeH][sizeW]) {
     char input; //入力を受け取る
     int checkMove = 0; //移動可否判定用
 
     //自機の操作
-    scanf_s("%c%*[^\n]", &input); //不要な入力を除く
+    scanf_s("%c%*[^\n]", &input, 1); //不要な入力を除く
     //printf("input = %c\n", input);
 
     //攻撃関数の呼び出し
@@ -73,7 +73,7 @@ int input_line() {
 
     //移動関数の呼び出し
     else if (input == 'r' || input == 'l' || input == 'u' || input == 'd') {
-        checkMove = func_move(map);
+        checkMove = can_move(map);
 
         //移動可能
         if (checkMove == 1) {
@@ -125,12 +125,47 @@ void func_attack(char map[sizeH][sizeW]) {
     }
 }
 
-//自機の移動処理関数
-int func_move(char map[sizeH][sizeW], char dir) {
-    //右移動
-    if (dir == 'r') {
-        //
+//自機の移動可否判定関数
+int can_move(char map[sizeH][sizeW], char dir) {
+    int i = 0;
+    int j = 0;
+    while (i < sizeH) {
+        while (j < sizeW) {
+            //自機の探索
+            if (map[i][j] == 'A') {
+                //右移動
+                if (dir == 'r') {
+                    //map内か
+                    if (j + 1 < sizeW) {
+                        func_move(map, i, j, i, j + 1);
+                        return 1;
+                    }
+                    //map外
+                    else {
+                        return 0;
+                    }
+                }
+
+                //処理終了
+                i = sizeH;
+                j = sizeW;
+            }
+            else {
+                i++;
+                j++;
+            }
+        }
     }
+}
+
+//自機の移動処理関数
+void func_move(char map[sizeH][sizeW], int currY, int currX, int nextY, int nextX) {
+    char temp;
+
+    //位置の入れ替え
+    temp = map[nextY][nextX];
+    map[nextY][nextX] = map[currY][currX];
+    map[currY][currX] = temp;
 }
 
 //ゲーム中の処理を行う関数
@@ -144,7 +179,7 @@ void now_gaming(char map[sizeH][sizeW]) {
         //入力の受け取り
         while (checkInput == 0) {
             //入力取得関数の呼び出し
-            checkInput = input_line(); //return 1で成功
+            checkInput = input_line(map); //return 1で成功
             //printf("checkInput = %d\n", checkInput);
         }
 
