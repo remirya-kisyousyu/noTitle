@@ -12,6 +12,10 @@
 #define sizeW 10
 #define HP 3
 
+void func_attack(char [][sizeW]);
+int can_move(char [][sizeW], char);
+void func_move(char[][sizeW], int, int, int, int);
+
 //マップの出力関数
 void output_map(char map[sizeH][sizeW]) {
     putchar('\n');
@@ -31,12 +35,12 @@ void map_reset(char map[sizeH][sizeW]) {
     for (int i = 0; i < sizeH; i++) {
         for (int j = 0; j < sizeW; j++) {
             //自機の配置
-            if (i == 5 && j == 0) {
+            if (i == 19 && j == 5) {
                 map[i][j] = 'A';
             }
 
             //敵機の配置
-            else if (j == 19) {
+            else if (i == 0) {
                 temp = rand() % 3; //０～２
 
                 //1/3の確率で敵を配置
@@ -73,7 +77,8 @@ int input_line(char map[sizeH][sizeW]) {
 
     //移動関数の呼び出し
     else if (input == 'r' || input == 'l' || input == 'u' || input == 'd') {
-        checkMove = can_move(map);
+        //printf("\ninput = %c\n", input);
+        checkMove = can_move(map, input);
 
         //移動可能
         if (checkMove == 1) {
@@ -127,16 +132,18 @@ void func_attack(char map[sizeH][sizeW]) {
 
 //自機の移動可否判定関数
 int can_move(char map[sizeH][sizeW], char dir) {
-    int i = 0;
+    int i = sizeH - 1;
     int j = 0;
-    while (i < sizeH) {
-        while (j < sizeW) {
+    
+    while (i >= 0) {
+        while (j >= 0) {
             //自機の探索
             if (map[i][j] == 'A') {
                 //右移動
                 if (dir == 'r') {
                     //map内か
                     if (j + 1 < sizeW) {
+                        //printf("\ndir = %c\n", dir);
                         func_move(map, i, j, i, j + 1);
                         return 1;
                     }
@@ -146,16 +153,51 @@ int can_move(char map[sizeH][sizeW], char dir) {
                     }
                 }
 
-                //処理終了
-                i = sizeH;
-                j = sizeW;
+                //左移動
+                else if (dir == 'l') {
+                    if (j - 1 >= 0) {
+                        func_move(map, i, j, i, j - 1);
+                        return 1;
+                    }
+                    else {
+                        return 0;
+                    }
+                }
+                
+                //上移動
+                else if (dir == 'u') {
+                    if (i - 1 >= 0) {
+                        func_move(map, i, j, i - 1, j);
+                        return 1;
+                    }
+                    else {
+                        return 0;
+                    }
+                }
+                
+                //下移動
+                else if (dir == 'd') {
+                    if (i + 1 < sizeH) {
+                        func_move(map, i, j, i + 1, j);
+                        return 1;
+                    }
+                    else {
+                        return 0;
+                    }
+                }
             }
             else {
-                i++;
+                //printf("\else\n");
                 j++;
             }
         }
+        i--;
+        j = 0;
     }
+
+    //自機が存在しない場合：例外
+    printf("\nゲーム終了 : can_move\n");
+    exit(0);
 }
 
 //自機の移動処理関数
@@ -182,6 +224,9 @@ void now_gaming(char map[sizeH][sizeW]) {
             checkInput = input_line(map); //return 1で成功
             //printf("checkInput = %d\n", checkInput);
         }
+
+        //output_map(map);
+        //exit(0);
 
         //敵の行動
 
